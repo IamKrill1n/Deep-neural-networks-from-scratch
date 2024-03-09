@@ -8,7 +8,7 @@ class Optimizer():
         pass
 
 class GD():
-    def __init__(self, learning_rate):
+    def __init__(self, learning_rate = 0.01):
         self.learning_rate = learning_rate
         self.name = 'GD'
 
@@ -20,7 +20,7 @@ class GD():
         return parameters
     
 class SGD():
-    def __init__(self, learning_rate, beta = 0.9):
+    def __init__(self, learning_rate = 0.01, beta = 0.9):
         self.learning_rate = learning_rate
         self.beta  = beta
         self.name = 'SGD'
@@ -42,7 +42,7 @@ class SGD():
         return parameters
     
 class RMSprop():
-    def __init__(self, learning_rate, beta, epsilon = 1e-8):
+    def __init__(self, learning_rate = 0.01, beta = 0.9, epsilon = 1e-8):
         self.learning_rate = learning_rate
         self.beta = beta
         self.epsilon = epsilon
@@ -65,7 +65,7 @@ class RMSprop():
         return parameters
     
 class Adam():
-    def __init__(self, learning_rate, beta1 = 0.9, beta2 = 0.999, t = 0, epsilon = 1e-8):
+    def __init__(self, learning_rate = 0.01, beta1 = 0.9, beta2 = 0.999, t = 0, epsilon = 1e-8):
         self.learning_rate = learning_rate
         self.beta1 = beta1
         self.beta2 = beta2
@@ -83,11 +83,11 @@ class Adam():
             self.s['dW' + str(l)] = np.zeros(parameters['W' + str(l)].shape)
             self.s['db' + str(l)] = np.zeros(parameters['b' + str(l)].shape)        
         
-    def update_parameters_with_adam(self, parameters, grads):
+    def update_parameters(self, parameters, grads):
         L = len(parameters) // 2
         v_corrected = {}
         s_corrected = {}
-
+        self.t += 1
         for l in range(1, L + 1):
             # update v
             self.v['dW' + str(l)] = self.beta1 * self.v['dW' + str(l)] + (1 - self.beta1) * grads['dW' + str(l)]
@@ -108,4 +108,4 @@ class Adam():
             # update parameters
             parameters['W' + str(l)] = parameters['W' + str(l)] - self.learning_rate * v_corrected['dW' + str(l)] / (np.sqrt(s_corrected['dW' + str(l)]) + self.epsilon)
             parameters['b' + str(l)] = parameters['b' + str(l)] - self.learning_rate * v_corrected['db' + str(l)] / (np.sqrt(s_corrected['db' + str(l)]) + self.epsilon)
-        
+        return parameters

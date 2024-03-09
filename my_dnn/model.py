@@ -1,10 +1,11 @@
 import numpy as np
-from utils import *
+from my_dnn.utils import *
 
 class SimpleDnn:
-    def __init__(self, layer_dims, output_activation):
+    def __init__(self, layer_dims, output_activation="sigmoid"):
         self.layer_dims = layer_dims
         self.output_activation = output_activation
+        self.parameters = initialize_parameters_he(layer_dims)
 
     def compile(self, optimizer, loss, metrics):
         self.optimizer = optimizer
@@ -33,7 +34,7 @@ class SimpleDnn:
         dAL = self.loss.grad(Y, AL)
         L = len(caches) 
         grads = {}
-        dA_prev_temp, dW_temp, db_temp = linear_activation_backward(dAL, caches[L - 1], 'sigmoid')
+        dA_prev_temp, dW_temp, db_temp = linear_activation_backward(dAL, caches[L - 1], self.output_activation)
         grads['dW' + str(L)] = dW_temp
         grads['db' + str(L)] = db_temp
         for l in range(L - 2, -1, -1):
@@ -44,7 +45,6 @@ class SimpleDnn:
         return grads
     
     def train(self, X, y, epochs = 100, batch_size = 64, verbose = 0):
-        self.parameters = initialize_parameters_he(self.layer_dims)
         m = X.shape[1]
         self.costs = []
         self.evals = []
@@ -57,11 +57,13 @@ class SimpleDnn:
                 if self.output_activation == 'softmax':
                     minibatch_Y = one_hot_encoding(minibatch_Y, self.layer_dims[-1])
                 # Forward propagation
-                AL, caches = self.forward_propagation(minibatch_X, self.parameters)
+                AL, caches = self.forward_propagation(minibatch_X)
                 # Compute cost
-                cost_total += self.loss(AL, minibatch_Y) * batch_size
+                cost = self.loss(minibatch_Y, AL)
+                cost_total += cost * minibatch_X.shape[1]
                 # Compute evaluation metric
-                eval_total += self.metrics(AL, minibatch_Y) * batch_size
+                eval = self.metrics(minibatch_Y, convert(AL, self.output_activation))
+                eval_total += eval * minibatch_X.shape[1]
                 # Backward propagation
                 grads = self.backward_propagation(minibatch_Y, AL, caches)
                 # Update parameters
@@ -82,4 +84,4 @@ class SimpleDnn:
         
     def predict(self, X):
         AL, _ = self.forward_propagation(X)
-        return convert(AL)
+        return convert(AL, self.output_activation)

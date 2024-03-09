@@ -58,34 +58,21 @@ def linear_activation_forward(A_prev, W, b, activation):
         A, activation_cache = sigmoid(Z)
     elif activation == "relu":
         A, activation_cache = relu(Z)
+    elif activation == "softmax":
+        A, activation_cache = softmax(Z)
+    elif activation == 'linear':
+        A, activation_cache = Z, Z
     cache = (linear_cache, activation_cache)
     return A, cache
 
 def initialize_parameters_he(layer_dims, seed = 42):
     np.random.seed(seed)
     parameters = {}
-    L = len(layer_dims)            # number of layers in the network
-    for l in range(1, L):
+    L = len(layer_dims) - 1        # number of layers in the network
+    for l in range(1, L + 1):
         parameters['W' + str(l)] = np.random.randn(layer_dims[l], layer_dims[l-1]) * np.sqrt(np.divide(2, layer_dims[l-1]))
         parameters['b' + str(l)] = np.zeros((layer_dims[l], 1))
     return parameters
-
-def compute_cost(AL, y):
-    m = np.shape(AL)[1]
-    cost = (-1/m) * (np.dot(y, np.log(AL).T) + np.dot(1 - y, np.log(1 - AL).T))
-    cost = np.squeeze(cost)
-    return cost
-
-def compute_cost_with_regularization(AL, y, parameters, lambd):
-    m = np.shape(AL)[1]
-    L = len(parameters) // 2
-    cross_entropy_cost = compute_cost(AL, y)
-    L2_regularization_cost = 0
-    for l in range(1, L + 1):
-        L2_regularization_cost += np.sum(np.square(parameters['W' + str(l)]))
-    L2_regularization_cost = (lambd/(2*m)) * L2_regularization_cost
-    cost = cross_entropy_cost + L2_regularization_cost
-    return cost
 
 def linear_backward(dZ, cache):
     A_prev, W, b = cache
@@ -106,34 +93,13 @@ def linear_activation_backward(dA, cache, activation):
         dZ = relu_backward(dA, activation_cache)
     elif activation == "sigmoid":
         dZ = sigmoid_backward(dA, activation_cache)
-        
+    elif activation == "softmax":
+        dZ = softmax_backward(dA, activation_cache)
+    elif activation == 'linear':
+        dZ = dA
     dA_prev, dW, db = linear_backward(dZ, linear_cache)
     
     return dA_prev, dW, db
-
-def L_model_backward(AL, Y, caches):
-    dAL = - (np.divide(Y, AL) - np.divide(1 - Y, 1 - AL))
-    L = len(caches) 
-    grads = {}
-
-    for l in range(L - 1, -1, -1):
-        if l == L - 1:
-            dA_prev_temp, dW_temp, db_temp = linear_activation_backward(dAL, caches[l], 'sigmoid')
-        else:
-            dA_prev_temp, dW_temp, db_temp = linear_activation_backward(dA_prev_temp, caches[l], 'relu')
-
-        grads['dA' + str(l)] = dA_prev_temp
-        grads['dW' + str(l + 1)] = dW_temp
-        grads['db' + str(l + 1)] = db_temp
-        
-    return grads
-
-def update_parameters(parameters, grads, learning_rate):
-    L = len(parameters) // 2
-    for l in range(1, L + 1):
-        parameters['W' + str(l)] = parameters['W' + str(l)] - learning_rate * grads['dW' + str(l)]
-        parameters['b' + str(l)] = parameters['b' + str(l)] - learning_rate * grads['db' + str(l)]
-    return parameters
 
 def random_mini_batches(X, y, mini_batches_size = 64, seed = 0):
     np.random.seed(seed)

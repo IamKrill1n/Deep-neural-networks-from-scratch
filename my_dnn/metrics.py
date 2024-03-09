@@ -3,7 +3,7 @@ import numpy as np
 class Metrics():
     def __init__(self):
         pass
-    def __call(self):
+    def __call__(self):
         pass
 
 class MSE(Metrics):
