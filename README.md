@@ -5,7 +5,6 @@ Simple Multilayer Perceptron from scratch in Python
 ## Structure
 
 The Relu activation function is used in every hidden layers
-![Example Image](nn.svg)
 
 ## Installation
 
@@ -22,7 +21,7 @@ git clone https://github.com/IamKrill1n/Deep-neural-networks-from-scratch.git
 ## Usage
 
 Regression example
-```
+```python
 from my_dnn import model, optimizers, loss, metrics
 # layer_dims = [number_of_feature_X, hidden_layer1, hidden_layer2, ..., hidden_layerL-1, output_layer]
 my_model = model.SimpleMlp(layer_dims=[X_train.shape[1], 32, 32, 16, 1], output_activation='relu')
@@ -35,7 +34,7 @@ y_pred= my_model.predict(X_test)
 ```
 
 Classification example
-```
+```python
 from my_dnn import model, optimizers, loss, metrics
 my_model = model.SimpleMlp(layer_dims = [X_train.shape[1], 32, 32, 16, number_of_class], output_activation = 'softmax')
 my_model.compile(optimizer = optimizers.Adam(), loss = loss.CategoricalCrossEntropy(), metrics = metrics.Accuracy())
