@@ -55,14 +55,14 @@ class SimpleDnn:
             for minibatch in minibatches:
                 (minibatch_X, minibatch_Y) = minibatch
                 if self.output_activation == 'softmax':
-                    minibatch_Y = one_hot_encoding(minibatch_Y, self.layer_dims[-1])
+                    minibatch_Y = one_hot_encoding(minibatch_Y, self.layer_dims[-1]).squeeze()
                 # Forward propagation
                 AL, caches = self.forward_propagation(minibatch_X)
                 # Compute cost
                 cost = self.loss(minibatch_Y, AL)
                 cost_total += cost * minibatch_X.shape[1]
                 # Compute evaluation metric
-                eval = self.metrics(minibatch_Y, convert(AL, self.output_activation))
+                eval = self.metrics(convert(minibatch_Y, self.output_activation), convert(AL, self.output_activation))
                 eval_total += eval * minibatch_X.shape[1]
                 # Backward propagation
                 grads = self.backward_propagation(minibatch_Y, AL, caches)

@@ -120,12 +120,21 @@ def random_mini_batches(X, y, mini_batches_size = 64, seed = 0):
     return mini_batches
 
 def one_hot_encoding(y, num_classes):
-    return np.eye(num_classes)[y]
+    return np.eye(num_classes)[y].T
 
 def convert(AL, activation):
     if activation == 'sigmoid':
         return AL > 0.5
     elif activation == 'softmax':
-        return np.argmax(AL, axis = 0)
+        return np.argmax(AL, axis = 0, keepdims = True)
     else:
         return AL
+    
+# if __name__ == "__main__":
+#     y_true = [0, 1, 2]
+#     AL = [[0.7, 0.2, 0.2], [0.1, 0.6, 0.3], [0.2, 0.2, 0.5]]
+#     BinaryCrossEntropy = BinaryCrossEntropy()
+#     CategoricalCrossEntropy = CategoricalCrossEntropy()
+#     # print(BinaryCrossEntropy(y_true, AL))
+#     print(CategoricalCrossEntropy(one_hot_encoding(y_true, 3), AL))
+#     print(convert(AL, 'softmax'))
