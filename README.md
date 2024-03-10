@@ -37,3 +37,6 @@ my_model.compile(optimizer = optimizers.Adam(), loss = loss.CategoricalCrossEntr
 my_model.train(X_train, y_train, epochs = 50, batch_size = 64, verbose = 0)
 y_pred = my_model.predict(X_test)
 ```
+
+## Reference
+Inspired by Coursera Deep learning Specialization https://www.coursera.org/specializations/deep-learning
