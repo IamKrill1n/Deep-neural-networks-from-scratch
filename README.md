@@ -4,7 +4,7 @@ Simple Multilayer Perceptron from scratch in Python
 
 ## Structure
 
-The Relu activation function is used in every hidden layers
+The Relu activation function is used in every hidden layer, the output layer can use other activation
 
 ## Installation
 
