@@ -1,7 +1,7 @@
 import numpy as np
 from my_dnn.utils import *
 
-class SimpleDnn:
+class SimpleMlp:
     def __init__(self, layer_dims, output_activation="sigmoid"):
         self.layer_dims = layer_dims
         self.output_activation = output_activation
