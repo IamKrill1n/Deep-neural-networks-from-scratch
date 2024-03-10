@@ -18,10 +18,16 @@ class SimpleDnn:
         self.loss = loss
         self.metrics = metrics
     
+    def save_weights(self, filename):
+        np.savez(filename, **self.parameters)
+
+    def load_weights(self, filename):
+        self.parameters = dict(np.load(filename))
+
     def forward_propagation(self, X):
         caches = []
         A = X
-        L = len(self.parameters) // 2
+        L = len(self.layer_dims) - 1
         for l in range(1, L):
             A_prev = A 
             A, cache = linear_activation_forward(A_prev, self.parameters['W' + str(l)], self.parameters['b' + str(l)], "relu")

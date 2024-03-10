@@ -1,3 +1,4 @@
 *.csv
 *.ipynb
+*.npz
 __pycache__/
