@@ -28,7 +28,7 @@ my_model = model.SimpleMlp(layer_dims=[X_train.shape[1], 32, 32, 16, 1], output_
 my_model.compile(optimizer = optimizers.RMSprop(), loss=loss.MSE(), metrics=metrics.RMSE())
 # X_train must be of shape (number_of_feature, number_of_examples)
 # y_train must be of shape (1, number_of_examples)
-my_model.train(X_train, y_train, epochs=50, batch_size=64, verbose=0)
+my_model.fit(X_train, y_train, validation_data = (X_val, y_val), epochs=50, batch_size=32, verbose=0)
 # X_test must be of shape (number_of_feature, number_of_examples)
 y_pred= my_model.predict(X_test)
 ```
@@ -38,7 +38,7 @@ Classification example
 from my_dnn import model, optimizers, loss, metrics
 my_model = model.SimpleMlp(layer_dims = [X_train.shape[1], 32, 32, 16, number_of_class], output_activation = 'softmax')
 my_model.compile(optimizer = optimizers.Adam(), loss = loss.CategoricalCrossEntropy(), metrics = metrics.Accuracy())
-my_model.train(X_train, y_train, epochs = 50, batch_size = 64, verbose = 0)
+my_model.fit(X_train, y_train, validation_data = (X_val, y_val), epochs = 50, batch_size = 32, verbose = 0)
 y_pred = my_model.predict(X_test)
 ```
 

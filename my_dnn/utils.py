@@ -1,6 +1,7 @@
 import numpy as np
 
 def sigmoid(Z):
+    Z = np.clip(Z, -500, 500)
     A = 1/(1+np.exp(-Z))
     cache = Z
     

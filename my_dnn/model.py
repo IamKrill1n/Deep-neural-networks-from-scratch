@@ -50,10 +50,16 @@ class SimpleMlp:
             
         return grads
     
-    def train(self, X, y, epochs = 100, batch_size = 64, verbose = 0):
+    def fit(self, X, y, validation_data, epochs = 100, batch_size = 32, val_batch_size = 32, verbose = 0):
         m = X.shape[1]
-        self.costs = []
-        self.evals = []
+        self.history = {
+            'loss': [],
+            'eval': [],
+            'val_loss': [],
+            'val_eval': []
+        }
+        if validation_data is not None:
+            X_val, y_val = validation_data
         for i in range(epochs):
             minibatches = random_mini_batches(X, y, batch_size, i)
             cost_total = 0
@@ -77,17 +83,37 @@ class SimpleMlp:
                 
             cost_avg = cost_total / m
             eval_avg = eval_total / m
-            self.costs.append(cost_avg)
-            self.evals.append(eval_avg)
-            if verbose:
-                print("Epoch " + str(i) + " Cost: " + str(cost_avg) + " Eval: " + str(eval_avg))
+            self.history['loss'].append(cost_avg)
+            self.history['eval'].append(eval_avg)
 
-    def get_costs(self):
-        return self.costs
+            if validation_data is not None:
+                minibatches_val = random_mini_batches(X_val, y_val, val_batch_size, i)
+                val_cost_total = 0
+                val_eval_total = 0
+                for minibatch in minibatches_val:
+                    (minibatch_X, minibatch_Y) = minibatch
+                    if self.output_activation == 'softmax':
+                        minibatch_Y = one_hot_encoding(minibatch_Y, self.layer_dims[-1]).squeeze()
+                    # Forward propagation
+                    AL_val, _ = self.forward_propagation(minibatch_X)
+                    # Compute cost
+                    val_cost = self.loss(minibatch_Y, AL_val)
+                    val_cost_total += val_cost * minibatch_X.shape[1]
+                    # Compute evaluation metric
+                    val_eval = self.metrics(convert(minibatch_Y, self.output_activation), convert(AL_val, self.output_activation))
+                    val_eval_total += val_eval * minibatch_X.shape[1]
+
+                val_cost = val_cost_total / X_val.shape[1]
+                val_eval = val_eval_total / X_val.shape[1]
+                self.history['val_loss'].append(val_cost)
+                self.history['val_eval'].append(val_eval)
+                    
+            if verbose:
+                print("Epoch " + str(i) + " Cost: " + str(cost_avg) + " Eval: " + str(eval_avg) + " Val Cost: " + str(val_cost) + " Val Eval: " + str(val_eval))
+
+    def get_history(self):
+        return self.history
     
-    def get_evals(self):
-        return self.evals
-        
     def predict(self, X):
         AL, _ = self.forward_propagation(X)
         return convert(AL, self.output_activation)
