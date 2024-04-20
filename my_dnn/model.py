@@ -51,6 +51,8 @@ class SimpleMlp:
         return grads
     
     def fit(self, X, y, validation_data, epochs = 100, batch_size = 32, val_batch_size = 32, verbose = 0):
+        X = X.T
+        y = y.reshape(1, -1)
         m = X.shape[1]
         self.history = {
             'loss': [],
@@ -60,21 +62,22 @@ class SimpleMlp:
         }
         if validation_data is not None:
             X_val, y_val = validation_data
+            X_val = X_val.T
+            y_val = y_val.reshape(1, -1)
+
         for i in range(epochs):
             minibatches = random_mini_batches(X, y, batch_size, i)
             cost_total = 0
             eval_total = 0
             for minibatch in minibatches:
                 (minibatch_X, minibatch_Y) = minibatch
-                if self.output_activation == 'softmax':
-                    minibatch_Y = one_hot_encoding(minibatch_Y, self.layer_dims[-1]).squeeze()
                 # Forward propagation
                 AL, caches = self.forward_propagation(minibatch_X)
                 # Compute cost
                 cost = self.loss(minibatch_Y, AL)
                 cost_total += cost * minibatch_X.shape[1]
                 # Compute evaluation metric
-                eval = self.metrics(convert(minibatch_Y, self.output_activation), convert(AL, self.output_activation))
+                eval = self.metrics(minibatch_Y, AL)
                 eval_total += eval * minibatch_X.shape[1]
                 # Backward propagation
                 grads = self.backward_propagation(minibatch_Y, AL, caches)
@@ -92,15 +95,13 @@ class SimpleMlp:
                 val_eval_total = 0
                 for minibatch in minibatches_val:
                     (minibatch_X, minibatch_Y) = minibatch
-                    if self.output_activation == 'softmax':
-                        minibatch_Y = one_hot_encoding(minibatch_Y, self.layer_dims[-1]).squeeze()
                     # Forward propagation
                     AL_val, _ = self.forward_propagation(minibatch_X)
                     # Compute cost
                     val_cost = self.loss(minibatch_Y, AL_val)
                     val_cost_total += val_cost * minibatch_X.shape[1]
                     # Compute evaluation metric
-                    val_eval = self.metrics(convert(minibatch_Y, self.output_activation), convert(AL_val, self.output_activation))
+                    val_eval = self.metrics(minibatch_Y, AL_val)
                     val_eval_total += val_eval * minibatch_X.shape[1]
 
                 val_cost = val_cost_total / X_val.shape[1]

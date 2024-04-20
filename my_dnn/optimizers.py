@@ -42,7 +42,7 @@ class SGD():
         return parameters
     
 class RMSprop():
-    def __init__(self, learning_rate = 0.01, beta = 0.9, epsilon = 1e-8):
+    def __init__(self, learning_rate = 0.001, beta = 0.9, epsilon = 1e-8):
         self.learning_rate = learning_rate
         self.beta = beta
         self.epsilon = epsilon
@@ -65,7 +65,7 @@ class RMSprop():
         return parameters
     
 class Adam():
-    def __init__(self, learning_rate = 0.01, beta1 = 0.9, beta2 = 0.999, t = 0, epsilon = 1e-8):
+    def __init__(self, learning_rate = 0.001, beta1 = 0.9, beta2 = 0.999, t = 0, epsilon = 1e-8):
         self.learning_rate = learning_rate
         self.beta1 = beta1
         self.beta2 = beta2
@@ -98,8 +98,8 @@ class Adam():
             v_corrected['db' + str(l)] = self.v['db' + str(l)] / (1 - self.beta1 ** self.t)
 
             # update s
-            self.s['dW' + str(l)] = self.beta2 * self.s['dW' + str(l)] + (1 - self.beta2) * grads['dW' + str(l)] ** 2
-            self.s['db' + str(l)] = self.beta2 * self.s['db' + str(l)] + (1 - self.beta2) * grads['db' + str(l)] ** 2
+            self.s['dW' + str(l)] = self.beta2 * self.s['dW' + str(l)] + (1 - self.beta2) * np.square(grads['dW' + str(l)])
+            self.s['db' + str(l)] = self.beta2 * self.s['db' + str(l)] + (1 - self.beta2) * np.square(grads['db' + str(l)])
 
             # update s corrected
             s_corrected['dW' + str(l)] = self.s['dW' + str(l)] / (1 - self. beta2 ** self.t)

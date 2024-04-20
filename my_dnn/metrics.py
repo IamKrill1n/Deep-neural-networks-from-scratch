@@ -31,3 +31,18 @@ class Accuracy(Metrics):
     def __call__(self, y_true, y_pred):
         return np.mean(y_true == y_pred)
     
+class CategoricalAccuracy(Metrics):
+    def __init__(self):
+        super().__init__()
+    def __call__(self, y_true, y_pred):
+        y_true = convert(y_true, 'softmax')
+        y_pred = convert(y_pred, 'softmax')
+        return np.mean(y_true == y_pred)
+    
+class SparseCategoricalAccuracy(Metrics):
+    def __init__(self):
+        super().__init__()
+    def __call__(self, y_true, y_pred):
+        y_pred = convert(y_pred, 'softmax')
+        return np.mean(y_true == y_pred)
+    

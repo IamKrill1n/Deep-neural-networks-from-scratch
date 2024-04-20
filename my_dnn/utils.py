@@ -120,7 +120,7 @@ def random_mini_batches(X, y, mini_batches_size = 64, seed = 0):
     return mini_batches
 
 def one_hot_encoding(y, num_classes):
-    return np.eye(num_classes)[y].T
+    return np.eye(num_classes)[y].T.squeeze()
 
 def convert(AL, activation):
     if activation == 'sigmoid':
@@ -130,7 +130,8 @@ def convert(AL, activation):
     else:
         return AL
     
-# if __name__ == "__main__":
+if __name__ == "__main__":
+    print(one_hot_encoding(np.array([[0, 1, 2], [2, 1, 0]]), 3))
 #     y_true = [0, 1, 2]
 #     AL = [[0.7, 0.2, 0.2], [0.1, 0.6, 0.3], [0.2, 0.2, 0.5]]
 #     BinaryCrossEntropy = BinaryCrossEntropy()
