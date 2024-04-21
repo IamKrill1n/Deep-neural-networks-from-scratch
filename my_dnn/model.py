@@ -116,5 +116,5 @@ class SimpleMlp:
         return self.history
     
     def predict(self, X):
-        AL, _ = self.forward_propagation(X)
-        return convert(AL, self.output_activation)
+        AL, _ = self.forward_propagation(X.T)
+        return convert(AL, self.output_activation).T
