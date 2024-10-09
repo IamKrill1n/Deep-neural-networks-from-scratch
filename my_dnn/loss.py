@@ -17,7 +17,7 @@ class MSE(Loss):
         return np.mean(np.square(y_true - y_pred))
     
     def grad(self, y_true, y_pred):
-        return y_pred - y_true
+        return (y_pred - y_true) / y_true.shape[1]
     
 class BinaryCrossEntropy(Loss):
     def __init__(self):
@@ -27,10 +27,9 @@ class BinaryCrossEntropy(Loss):
         y_pred = np.clip(y_pred, 1e-7, 1 - 1e-7)
         return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
         
-    
     def grad(self, y_true, y_pred):
         y_pred = np.clip(y_pred, 1e-7, 1 - 1e-7)  # clip values to avoid division by zero
-        return (y_pred - y_true) / (y_pred * (1 - y_pred))
+        return (y_pred - y_true) / (y_pred * (1 - y_pred) * y_true.shape[1]) 
 
 class CategoricalCrossEntropy(Loss):
     def __init__(self):
@@ -42,7 +41,7 @@ class CategoricalCrossEntropy(Loss):
     
     def grad(self, y_true, y_pred):
         y_pred = np.clip(y_pred, 1e-7, 1 - 1e-7)  # clip values to avoid division by zero
-        return (y_pred - y_true) / (y_pred * (1 - y_pred))
+        return (y_pred - y_true) / (y_pred * (1 - y_pred) * y_true.shape[1])
     
 class SparseCategoricalCrossEntropy(Loss):
     def __init__(self):
@@ -56,7 +55,7 @@ class SparseCategoricalCrossEntropy(Loss):
     def grad(self, y_true, y_pred):
         y_true = one_hot_encoding(y_true, y_pred.shape[0])
         y_pred = np.clip(y_pred, 1e-7, 1 - 1e-7)
-        return (y_pred - y_true) / (y_pred * (1 - y_pred))
+        return (y_pred - y_true) / (y_pred * (1 - y_pred) * y_true.shape[1])
     
 # if __name__ == "__main__":
 #     y_true = np.array([0, 1]).T
